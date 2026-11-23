@@ -122,6 +122,23 @@ io.on("connection", (socket) => {
     }
   });
 
+
+  // Voice chat signaling
+  socket.on("voiceOffer", (data) => {
+    if (!data || data.roomCode !== socket.data.roomCode) return;
+    socket.to(data.roomCode).emit("voiceOffer", data.offer);
+  });
+
+  socket.on("voiceAnswer", (data) => {
+    if (!data || data.roomCode !== socket.data.roomCode) return;
+    socket.to(data.roomCode).emit("voiceAnswer", data.answer);
+  });
+
+  socket.on("voiceIceCandidate", (data) => {
+    if (!data || data.roomCode !== socket.data.roomCode) return;
+    socket.to(data.roomCode).emit("voiceIceCandidate", data.candidate);
+  });
+
   socket.on("disconnect", () => {
     const code = socket.data.roomCode;
     const room = rooms.get(code);
