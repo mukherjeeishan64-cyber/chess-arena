@@ -1,0 +1,111 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #101827;
+  color: white;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+}
+
+header {
+  text-align: center;
+  padding: 35px 10px;
+  background: #17243a;
+  border-bottom: 2px solid #d6a83e;
+}
+
+header h1 {
+  color: #f5c75e;
+  font-size: 30px;
+  letter-spacing: 3px;
+}
+
+header p {
+  color: #aebbd0;
+  margin-top: 10px;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+
+main {
+  display: flex;
+  justify-content: center;
+  padding: 60px 15px;
+}
+
+.card {
+  width: 100%;
+  max-width: 380px;
+  background: #1b2a42;
+  padding: 30px 22px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 10px 35px #0008;
+}
+
+.card h2 {
+  color: #f5c75e;
+  margin-bottom: 12px;
+}
+
+.card p {
+  color: #bdc8d8;
+  margin-bottom: 25px;
+}
+
+button {
+  width: 100%;
+  padding: 15px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 9px;
+  background: #e8b94e;
+  color: #182235;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #ffd875;
+}
+
+input {
+  width: 100%;
+  padding: 15px;
+  margin-top: 18px;
+  background: #101827;
+  color: white;
+  border: 1px solid #53647d;
+  border-radius: 9px;
+  font-size: 15px;
+}
+
+#status {
+  margin-top: 20px;
+  font-size: 13px;
+}
+
+.chessboard {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  width: min(92vw, 420px);
+  aspect-ratio: 1;
+  margin: 25px auto;
+  border: 4px solid #d6a83e;
+}
+
+.square {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(22px, 7vw, 42px);
+}
+
+.light { background: #f0d9b5; }
+.dark { background: #779556; }
+
