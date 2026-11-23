@@ -3484,7 +3484,10 @@
       var game = new Chess();
       var board = document.querySelector(".chessboard");
       var status = document.getElementById("status");
+      var socket = window.socket;
       var selected = null;
+      var roomCode = null;
+      var playerColor = null;
       var symbols = {
         wp: "\u2659",
         wr: "\u2656",
@@ -3509,30 +3512,61 @@
             if (piece) {
               square.textContent = symbols[piece.color + piece.type];
             }
-            square.onclick = () => move(pos);
+            square.onclick = () => handleSquare(pos);
             board.appendChild(square);
           });
         });
-        status.textContent = game.isCheckmate() ? "CHECKMATE!" : game.isDraw() ? "DRAW!" : game.isCheck() ? "CHECK!" : game.turn() === "w" ? "WHITE'S TURN" : "BLACK'S TURN";
       }
-      function move(pos) {
+      function handleSquare(pos) {
+        if (!roomCode || !playerColor) {
+          status.textContent = "Create or join a room first!";
+          return;
+        }
+        if (game.turn() !== (playerColor === "white" ? "w" : "b")) {
+          status.textContent = "Wait for your turn!";
+          return;
+        }
         if (!selected) {
           const piece = game.get(pos);
           if (!piece || piece.color !== game.turn()) return;
           selected = pos;
-        } else {
-          try {
-            game.move({
-              from: selected,
-              to: pos,
-              promotion: "q"
-            });
-          } catch (e) {
-          }
-          selected = null;
+          status.textContent = "Select destination square";
+          return;
         }
-        render();
+        socket.emit("makeMove", {
+          roomCode,
+          from: selected,
+          to: pos,
+          promotion: "q"
+        });
+        selected = null;
       }
+      socket.on("roomCreated", (data) => {
+        roomCode = data.roomCode;
+        playerColor = data.color;
+        game.load(data.fen);
+        selected = null;
+        render();
+      });
+      socket.on("roomJoined", (data) => {
+        roomCode = data.roomCode;
+        playerColor = data.color;
+        game.load(data.fen);
+        selected = null;
+        render();
+      });
+      socket.on("moveMade", (data) => {
+        game.load(data.fen);
+        selected = null;
+        render();
+        status.textContent = data.checkmate ? "CHECKMATE!" : data.draw ? "DRAW!" : data.check ? "CHECK!" : game.turn() === "w" ? "WHITE'S TURN" : "BLACK'S TURN";
+      });
+      socket.on("moveError", (message) => {
+        status.textContent = message;
+      });
+      socket.on("gameReady", () => {
+        status.textContent = "Game ready! White vs Black";
+      });
       render();
     }
   });

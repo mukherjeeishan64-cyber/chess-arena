@@ -1,6 +1,8 @@
-const socket = io();
+window.socket = io();
 
+const socket = window.socket;
 const statusText = document.getElementById("status");
+const roomInput = document.getElementById("roomCode");
 
 socket.on("connect", () => {
   statusText.textContent = "Connected to Chess Arena!";
@@ -11,22 +13,39 @@ socket.on("disconnect", () => {
 });
 
 document.getElementById("create").onclick = () => {
-  const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-  socket.emit("createRoom", code);
-  document.getElementById("roomCode").value = code;
-  statusText.textContent = "Room: " + code;
+  socket.emit("createRoom", "");
+  statusText.textContent = "Creating room...";
 };
 
 document.getElementById("join").onclick = () => {
-  const code = document.getElementById("roomCode").value.trim().toUpperCase();
+  const code = roomInput.value.trim().toUpperCase();
+
   if (!code) {
-    statusText.textContent = "Enter room code!";
+    statusText.textContent = "Enter Room Code!";
     return;
   }
+
   socket.emit("joinRoom", code);
-  statusText.textContent = "Joining: " + code;
+  statusText.textContent = "Joining room...";
 };
 
-socket.on("playerJoined", () => {
-  statusText.textContent = "Opponent joined!";
+socket.on("roomCreated", (data) => {
+  roomInput.value = data.roomCode;
+  statusText.textContent = "Room created: " + data.roomCode + " | You are White";
+});
+
+socket.on("roomJoined", (data) => {
+  statusText.textContent = "Joined: " + data.roomCode + " | You are Black";
+});
+
+socket.on("roomError", (message) => {
+  statusText.textContent = message;
+});
+
+socket.on("gameReady", () => {
+  statusText.textContent = "Opponent connected! Game ready.";
+});
+
+socket.on("opponentDisconnected", () => {
+  statusText.textContent = "Opponent disconnected!";
 });
