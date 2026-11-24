@@ -99,6 +99,15 @@ io.on("connection", (socket) => {
       room.players[color] !== socket.id ||
       room.game.turn() !== (color === "white" ? "w" : "b")
     ) {
+      console.log("MOVE REJECTED:", {
+        socketRoom: socket.data.roomCode,
+        requestedRoom: code,
+        color,
+        turn: room.game.turn(),
+        player: room.players[color],
+        socket: socket.id
+      });
+      socket.emit("moveError", "Move rejected: turn or player mismatch");
       return;
     }
 
